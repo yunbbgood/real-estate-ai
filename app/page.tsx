@@ -51,6 +51,15 @@ export default function Home() {
       <header className="relative overflow-hidden border-b border-blue-100">
         <div className="absolute inset-0 bg-gradient-to-r from-[#003366] to-[#004d99] opacity-5"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          {/* Nav button in header */}
+          <div className="flex justify-end mb-6">
+            <Link href="/cases">
+              <button className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-[#003366] border-2 border-[#003366] hover:bg-[#003366]/10 transition-all duration-300">
+                📋 我的案件
+              </button>
+            </Link>
+          </div>
+
           {/* Logo */}
           <div className="flex items-center justify-center mb-6 sm:mb-8">
             <div className="text-center">
