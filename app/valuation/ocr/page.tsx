@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function OcrUploadPage() {
+  const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const supportedFormats = ['PDF', 'JPG', 'PNG'];
@@ -65,8 +68,11 @@ export default function OcrUploadPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (uploadedFile) {
-      // 暫時不真正上傳，只完成 UI
-      console.log('OCR processing:', uploadedFile.name);
+      setIsProcessing(true);
+      // 模擬 OCR 辨識，2秒後導航
+      setTimeout(() => {
+        router.push('/valuation/result');
+      }, 2000);
     }
   };
 
@@ -189,16 +195,23 @@ export default function OcrUploadPage() {
             <div className="pt-6 sm:pt-8">
               <button
                 type="submit"
-                disabled={!uploadedFile}
+                disabled={!uploadedFile || isProcessing}
                 className={`w-full inline-flex items-center justify-center px-8 py-4 rounded-xl font-bold text-lg sm:text-xl transition-all duration-300 shadow-lg ${
-                  uploadedFile
+                  uploadedFile && !isProcessing
                     ? 'text-white bg-gradient-to-r from-[#003366] to-[#004d99] hover:from-[#002244] hover:to-[#003d7a] hover:shadow-xl transform hover:scale-105 cursor-pointer'
                     : 'text-gray-400 bg-gray-200 cursor-not-allowed'
                 }`}
               >
-                開始 OCR 辨識
+                {isProcessing ? (
+                  <>
+                    <span className="inline-block animate-spin mr-2">⏳</span>
+                    AI 正在辨識...
+                  </>
+                ) : (
+                  '開始 OCR 辨識'
+                )}
               </button>
-              {!uploadedFile && (
+              {!uploadedFile && !isProcessing && (
                 <p className="text-gray-500 text-sm text-center mt-3">
                   請先上傳檔案
                 </p>
