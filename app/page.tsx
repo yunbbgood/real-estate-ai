@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface Feature {
   title: string;
   description: string;
   icon: string;
   color: string;
+  href: string;
 }
 
 const features: Feature[] = [
@@ -15,24 +17,28 @@ const features: Feature[] = [
     description: '利用 AI 技術快速估算房產價格',
     icon: '💰',
     color: 'from-blue-400 to-blue-600',
+    href: '/valuation',
   },
   {
     title: 'OCR辨識',
     description: '自動辨識與提取謄本資料',
     icon: '📄',
     color: 'from-cyan-400 to-cyan-600',
+    href: '/ocr',
   },
   {
     title: '文宣生成',
     description: '快速生成專業的房產文宣',
     icon: '✍️',
     color: 'from-indigo-400 to-indigo-600',
+    href: '/copywriting',
   },
   {
     title: '短影音腳本',
     description: '自動生成短影音腳本內容',
     icon: '🎬',
     color: 'from-purple-400 to-purple-600',
+    href: '/script',
   },
 ];
 
@@ -104,12 +110,14 @@ export default function Home() {
                   </p>
 
                   {/* Button */}
-                  <button className="inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-[#003366] to-[#004d99] hover:from-[#002244] hover:to-[#003d7a] transition-all duration-300 transform group-hover:translate-x-1 group-hover:shadow-lg">
-                    進入應用
-                    <span className="ml-2 text-lg group-hover:translate-x-1 transition-transform duration-300">
-                      →
-                    </span>
-                  </button>
+                  <Link href={feature.href}>
+                    <button className="inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-[#003366] to-[#004d99] hover:from-[#002244] hover:to-[#003d7a] transition-all duration-300 transform group-hover:translate-x-1 group-hover:shadow-lg">
+                      進入應用
+                      <span className="ml-2 text-lg group-hover:translate-x-1 transition-transform duration-300">
+                        →
+                      </span>
+                    </button>
+                  </Link>
 
                   {/* Decorative corner accent */}
                   <div className="absolute top-0 right-0 w-12 h-12 rounded-bl-full bg-gradient-to-br from-[#003366]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
