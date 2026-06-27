@@ -1,71 +1,73 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 
-interface AnalysisData {
-  estimatedPrice: string;
-  priceRange: {
-    min: string;
-    max: string;
-  };
-  marketAnalysis: {
-    title: string;
-    description: string;
-  }[];
-  recommendations: string[];
+interface PricePoint {
+  label: string;
+  price: string;
+  description: string;
+}
+
+interface AnalysisMetric {
+  title: string;
+  rating: number;
+  maxRating: number;
+}
+
+interface Suggestion {
+  title: string;
+  content: string;
 }
 
 export default function ValuationAnalysisPage() {
+  const [isPdfExporting, setIsPdfExporting] = useState(false);
+
   // Mock Data - AI 估價分析結果
-  const analysisData: AnalysisData = {
-    estimatedPrice: '1688',
-    priceRange: {
-      min: '1600',
-      max: '1750',
-    },
-    marketAnalysis: [
-      {
-        title: '區域增長潛力',
-        description: '高雄市鼓山區近年房價穩定成長，文教區域吸引年輕家庭移入。',
-      },
-      {
-        title: '交通便利度',
-        description: '鄰近捷運站、美術館等公共設施，交通便利指數高。',
-      },
-      {
-        title: '生活機能評分',
-        description: '周邊商圈完善，超市、學校、醫療設施齊全。',
-      },
-      {
-        title: '房屋保值率',
-        description: '屋齡 12 年，保值率 85%，裝修狀況良好。',
-      },
-    ],
-    recommendations: [
-      '基於目前市場行情，建議開價在 1,600 - 1,750 萬之間',
-      '考慮區域平均每坪單價 28-30 萬，該物件具有競爭力',
-      '建議在近期內刊登，避免錯失銷售熱期',
-      '可考慮提供現場虛擬看房服務，吸引遠距客戶',
-      '建議搭配專業房產文案和高清照片提升吸引力',
-    ],
+  const suggestedPrice = 1680;
+  const confidenceLevel = 5;
+  
+  const pricePoints: PricePoint[] = [
+    { label: '快速成交價', price: '1580', description: '快速售出' },
+    { label: '合理成交價', price: '1680', description: '市場均價' },
+    { label: '最佳開價', price: '1780', description: '最優定價' },
+  ];
+
+  const analysisMetrics: AnalysisMetric[] = [
+    { title: '交通便利', rating: 4, maxRating: 5 },
+    { title: '生活機能', rating: 5, maxRating: 5 },
+    { title: '學區', rating: 4, maxRating: 5 },
+    { title: '未來增值', rating: 4, maxRating: 5 },
+  ];
+
+  const suggestions: Suggestion[] = [
+    { title: '建議開價', content: '1,780 萬元（利於吸引客戶）' },
+    { title: '建議底價', content: '1,580 萬元（快速成交保障）' },
+    { title: '推薦文案方向', content: '強調美術館學區、交通便利、新古屋改裝潛力' },
+    { title: '推薦目標客群', content: '首購族、年輕家庭、文教人士' },
+    { title: '行銷建議', content: '優先在周末舉辦看屋會、配合線上虛擬看房' },
+  ];
+
+  const handleExportPdf = () => {
+    setIsPdfExporting(true);
+    setTimeout(() => {
+      setIsPdfExporting(false);
+      // 實際 PDF 匯出邏輯
+      console.log('PDF exported');
+    }, 1500);
   };
 
-  const analysisItems = [
-    {
-      label: '估價價格',
-      value: `${analysisData.estimatedPrice}萬`,
-      icon: '💰',
-      highlight: true,
-      color: 'from-[#003366] to-[#004d99]',
-    },
-    {
-      label: '估價範圍',
-      value: `${analysisData.priceRange.min} - ${analysisData.priceRange.max}萬`,
-      icon: '📊',
-      highlight: true,
-      color: 'from-cyan-500 to-blue-600',
-    },
-  ];
+  const renderStars = (rating: number, maxRating: number = 5) => {
+    return (
+      <span className="text-lg">
+        {[...Array(maxRating)].map((_, i) => (
+          <span key={i} className={i < rating ? 'text-yellow-400' : 'text-gray-300'}>
+            ★
+          </span>
+        ))}
+      </span>
+    );
+  };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-white via-blue-50 to-white">
@@ -89,110 +91,139 @@ export default function ValuationAnalysisPage() {
 
       {/* Main content */}
       <main className="flex-1">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-          {/* AI Analysis Result */}
-          <div className="mb-8 sm:mb-12 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-6 border border-green-200 flex items-start gap-4">
-            <span className="text-3xl flex-shrink-0">🤖</span>
-            <div>
-              <h2 className="font-bold text-green-800 mb-1">
-                AI 分析完成
-              </h2>
-              <p className="text-green-700 text-sm sm:text-base">
-                系統已根據市場數據、房屋條件和區域特性進行全面分析
-              </p>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 space-y-8 sm:space-y-10">
+          
+          {/* ① AI 建議售價 */}
+          <div className="bg-gradient-to-br from-[#003366] to-[#004d99] rounded-3xl p-8 sm:p-12 shadow-xl text-white">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div>
+                <p className="text-sm sm:text-base font-semibold opacity-90 mb-2">AI 建議售價</p>
+                <h2 className="text-5xl sm:text-6xl md:text-7xl font-black mb-2">
+                  {suggestedPrice}
+                  <span className="text-3xl sm:text-4xl">萬</span>
+                </h2>
+                <p className="text-sm sm:text-base opacity-90">基於市場數據與物件條件分析</p>
+              </div>
+              <div className="bg-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur">
+                <p className="text-xs sm:text-sm font-semibold opacity-90 mb-3">信心指數</p>
+                <div className="text-4xl sm:text-5xl text-yellow-300">
+                  {renderStars(confidenceLevel, 5)}
+                </div>
+                <p className="text-xs sm:text-sm mt-3 opacity-90">非常高</p>
+              </div>
             </div>
           </div>
 
-          {/* Price Analysis Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-12">
-            {analysisItems.map((item, index) => (
-              <div
-                key={index}
-                className={`rounded-2xl p-6 sm:p-8 bg-gradient-to-br ${item.color} text-white shadow-lg hover:shadow-xl transition-all duration-300`}
-              >
-                <div className="flex items-start gap-4">
-                  <span className="text-3xl">{item.icon}</span>
-                  <div className="flex-1">
-                    <label className="text-xs sm:text-sm font-semibold opacity-90 uppercase tracking-wide mb-2 block">
-                      {item.label}
-                    </label>
-                    <p className="text-2xl sm:text-3xl md:text-4xl font-bold">
-                      {item.value}
-                    </p>
+          {/* ② 價格區間 */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-100">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#003366] mb-8">💹 價格區間</h2>
+            <div className="space-y-6">
+              {pricePoints.map((point, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-end justify-between mb-2">
+                    <div>
+                      <p className="text-sm sm:text-base font-semibold text-gray-700">{point.label}</p>
+                      <p className="text-xs text-gray-500">{point.description}</p>
+                    </div>
+                    <p className="text-xl sm:text-2xl font-bold text-[#003366]">{point.price}萬</p>
+                  </div>
+                  {/* Bar chart */}
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        index === 0
+                          ? 'w-3/5 bg-gradient-to-r from-red-400 to-orange-400'
+                          : index === 1
+                          ? 'w-4/5 bg-gradient-to-r from-[#003366] to-[#004d99]'
+                          : 'w-full bg-gradient-to-r from-green-400 to-emerald-400'
+                      }`}
+                    ></div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* Market Analysis */}
-          <div className="mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#003366] mb-6">
-              📈 市場分析
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              {analysisData.marketAnalysis.map((item, index) => (
+          {/* ③ AI 分析 */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-100">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#003366] mb-8">📊 AI 分析</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {analysisMetrics.map((metric, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-100 hover:shadow-lg hover:border-[#003366]/20 transition-all duration-300"
+                  className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-100 hover:shadow-lg hover:border-[#003366]/20 transition-all duration-300 text-center"
                 >
-                  <h3 className="text-lg sm:text-xl font-bold text-[#003366] mb-3">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
-                    {item.description}
+                  <p className="text-sm sm:text-base font-semibold text-gray-700 mb-3">
+                    {metric.title}
+                  </p>
+                  <div className="text-3xl sm:text-4xl text-yellow-400 mb-2">
+                    {renderStars(metric.rating, metric.maxRating)}
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    {metric.rating}/{metric.maxRating}
                   </p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Recommendations */}
-          <div className="mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#003366] mb-6">
-              💡 專業建議
-            </h2>
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 sm:p-8 border border-blue-200">
-              <ul className="space-y-3 sm:space-y-4">
-                {analysisData.recommendations.map((rec, index) => (
-                  <li key={index} className="flex items-start gap-3 sm:gap-4">
-                    <span className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-r from-[#003366] to-[#004d99] text-white flex items-center justify-center text-xs sm:text-sm font-bold">
-                      {index + 1}
-                    </span>
-                    <p className="text-gray-800 text-sm sm:text-base pt-0.5">
-                      {rec}
+          {/* ④ AI 建議 */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-100">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#003366] mb-8">💡 AI 建議</h2>
+            <div className="space-y-4 sm:space-y-5">
+              {suggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-4 p-4 sm:p-5 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100"
+                >
+                  <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-r from-[#003366] to-[#004d99] text-white flex items-center justify-center font-bold text-sm sm:text-base">
+                    {index + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-800 text-sm sm:text-base mb-1">
+                      {suggestion.title}
                     </p>
-                  </li>
-                ))}
-              </ul>
+                    <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+                      {suggestion.content}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Additional Info */}
-          <div className="mb-8 sm:mb-12 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 sm:p-8 border border-amber-200">
-            <h3 className="text-lg font-semibold text-amber-900 mb-3 flex items-center gap-2">
-              <span>ℹ️</span>
-              重要提示
-            </h3>
-            <ul className="text-amber-800 text-sm sm:text-base space-y-2">
-              <li>• 本估價結果為 AI 分析推估，實際成交價格受多因素影響</li>
-              <li>• 建議配合實地勘查和專業房仲顧問意見</li>
-              <li>• 市場行情可能隨時變動，建議定期更新估價</li>
-              <li>• 本分析基於公開市場數據和房屋條件</li>
-            </ul>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+          {/* ⑤ 底部按鈕 */}
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 pt-4 sm:pt-8">
             <Link href="/cases" className="flex-1">
-              <button className="w-full px-8 py-4 rounded-xl font-bold text-lg text-white bg-gradient-to-r from-[#003366] to-[#004d99] hover:from-[#002244] hover:to-[#003d7a] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                存檔案件
+              <button className="w-full px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg text-white bg-gradient-to-r from-[#003366] to-[#004d99] hover:from-[#002244] hover:to-[#003d7a] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                📋 回我的案件
               </button>
             </Link>
-            <button className="flex-1 px-8 py-4 rounded-xl font-bold text-lg text-[#003366] border-2 border-[#003366] hover:bg-[#003366]/5 transition-all duration-300">
-              列印報告
+            <button
+              onClick={handleExportPdf}
+              disabled={isPdfExporting}
+              className="flex-1 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isPdfExporting ? (
+                <>
+                  <span className="inline-block animate-spin">⏳</span>
+                  匯出中...
+                </>
+              ) : (
+                <>
+                  📄 匯出 PDF
+                </>
+              )}
             </button>
+            <Link href="/valuation/create" className="flex-1">
+              <button className="w-full px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg text-[#003366] border-2 border-[#003366] hover:bg-[#003366]/10 transition-all duration-300">
+                🔄 重新估價
+              </button>
+            </Link>
           </div>
+
+          {/* Footer spacer */}
+          <div className="h-4"></div>
         </div>
       </main>
 
